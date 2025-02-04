@@ -1,10 +1,5 @@
-﻿using QTIEditor.QTI;
-using QTIEditor.QTI.Interactions;
-using QTIEditor.QTI.Interfaces;
+﻿using QTIEditor.QTI.Interfaces;
 using QTIEditor.QTI.Manifest;
-using QTIEditor.QTI.SimpleTypes;
-using QTIEditor.QTI.VariableProcessing;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
@@ -12,7 +7,6 @@ using System.Reflection;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 
 
 namespace QTIEditor
@@ -217,7 +211,15 @@ namespace QTIEditor
 
             if (res == true)
             {
-                ExportXml(saveDialog.FileName);
+                try
+                {
+                    ExportXml(saveDialog.FileName);
+                }
+                catch (Exception exportException)
+                {
+                    MessageBox.Show($"An issue occurred during export. Error: \n {exportException}","Export Failed!", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                
             }
 
         }
@@ -226,74 +228,6 @@ namespace QTIEditor
         {
 
             List<IManifestLinkable> questions = [];
-
-            //foreach (var question in )
-            //{
-            //    AssessmentItem assessmentItem = new()
-            //    {
-            //        title = "",
-            //        timeDependent = false,
-            //        Body = new(),
-            //    };
-
-
-
-            //    List<SimpleChoice> choices = [];
-            //    foreach (string choice in question.Choices)
-            //    {
-            //        choices.Add(new() { text = choice });
-            //    }
-
-            //    var ansIdx = question.ParseAnswerIdx() ?? throw new InvalidOperationException("Bad answer data in export");
-
-            //    ChoiceInteraction interaction;
-            //    if (ansIdx.Count > 1)
-            //    {
-            //        List<UniqueIdentifier> answerIds = [];
-            //        foreach (var idx in ansIdx)
-            //        {
-            //            answerIds.Add(choices[idx].identifier);
-            //        }
-
-            //        interaction = new()
-            //        {
-            //            choices = choices,
-            //            Response = ResponseDeclaration.TemplateCorrectResponse(answerIds),
-            //            maxChoices = 0,
-            //            prompt = new()
-            //            {
-            //                prompt = question.Prompt
-            //            }
-            //        };
-            //    }
-            //    else
-            //    {
-            //        interaction = new()
-            //        {
-            //            choices = choices,
-            //            CorrectChoiceIndex = ansIdx.Single(),
-            //            prompt = new() { prompt = question.Prompt }
-            //        };
-            //    }
-
-            //    if (question._points != 1 || question.Choices.Count > 1)
-            //    {
-
-            //        interaction.Response.ApplyMappingEven(question._points);
-            //        assessmentItem.responseProcessing = ResponseProcessing.TemplateMapResponse();
-
-            //    } else
-            //    {
-            //        assessmentItem.responseProcessing = ResponseProcessing.TemplateMatchCorrect();
-            //    }
-
-
-            //    assessmentItem.Body.items.Add(interaction);
-            //    assessmentItem.outcomeDeclarations.Add(OutcomeDeclaration.TemplateScore());
-
-            //    questions.Add(assessmentItem);
-
-            //}
 
             foreach (UIElement interaction in InteractionStack.Children)
             {

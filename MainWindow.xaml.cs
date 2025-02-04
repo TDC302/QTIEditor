@@ -202,9 +202,9 @@ namespace QTIEditor
         {
             var saveDialog = new Microsoft.Win32.SaveFileDialog
             {
-                DefaultExt = ".zip",
-                Title = "Export IMSQTIV2.2 package",
-                Filter = "IMSQTIv2.2 Package|*.zip|All Files|*.*"
+                DefaultExt = Constants.QTI_PACKAGE_FILE_EXT,
+                Title = "Export" + Constants.QTI_PACKAGE_FRIENDLY_NAME,
+                Filter = $"{Constants.QTI_PACKAGE_FRIENDLY_NAME}|*{Constants.QTI_PACKAGE_FILE_EXT}|All Files|*.*"
             };
 
             var res = saveDialog.ShowDialog(this);

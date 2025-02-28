@@ -13,6 +13,8 @@ namespace QTIEditor
         public const string QTI_PACKAGE_FRIENDLY_NAME = "IMSQTIv2.2 Package";
         public const string QTI_PACKAGE_FILE_EXT = ".zip";
 
+        public const string PDF_FILE_FRIENDLY_NAME = "PDF Document";
+        public const string PDF_FILE_EXT = ".pdf";
 
     }
 }

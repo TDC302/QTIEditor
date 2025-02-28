@@ -1,4 +1,5 @@
-﻿using QTIEditor.QTI.Interfaces;
+﻿using QTIEditor.Export;
+using QTIEditor.QTI.Interfaces;
 using QTIEditor.QTI.Manifest;
 using System.Diagnostics;
 using System.IO;
@@ -272,6 +273,23 @@ namespace QTIEditor
 
         }
 
-        
+        private void ExportPdfButton_Click(object sender, RoutedEventArgs e)
+        {
+
+            List<IManifestLinkable> questions = [];
+
+            foreach (UIElement interaction in InteractionStack.Children)
+            {
+                if (interaction is IInteractionControl associateInteraction)
+                {
+                    questions.Add(associateInteraction.ToQTIAssessmentItem());
+                }
+            }
+            ExportPDF exportOptions = new(questions)
+            {
+                WindowStartupLocation = WindowStartupLocation.CenterScreen
+            };
+            exportOptions.ShowDialog();
+        }
     }
 }

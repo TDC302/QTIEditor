@@ -3,8 +3,13 @@ using QTIEditor.QTI.Manifest;
 using System.IO.Compression;
 using System.IO;
 using System.Windows;
+using System.Windows.Controls;
+using System.Collections.ObjectModel;
+using QTIEditor.QTI;
 
 namespace QTIEditor.Export
+
+
 {
     /// <summary>
     /// Interaction logic for ExportQTI.xaml
@@ -15,13 +20,21 @@ namespace QTIEditor.Export
         private List<IManifestLinkable> questions;
 
 
+       
+
+
 
         public ExportQTI(List<IManifestLinkable> questions)
         {
             this.questions = questions;
 
+            
+
             InitializeComponent();
+
         }
+
+
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
@@ -55,6 +68,30 @@ namespace QTIEditor.Export
 
         private void ExportXml(string path)
         {
+
+            if (CheckBoxShuffleItems.IsChecked == true)
+            {
+                foreach (IManifestLinkable question in questions)
+                {
+                    if (question is AssessmentItem assessmentItem)
+                    {
+                        var assessmentItemSections = assessmentItem.Body?.items;
+
+                        if (assessmentItemSections != null)
+                        {
+                            foreach (var section in assessmentItemSections)
+                            {
+                                if (section is IShuffleable shuffleable)
+                                {
+                                    shuffleable.Shuffle = true;
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+
 
             Manifest manifest = new()
             {

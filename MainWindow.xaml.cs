@@ -201,69 +201,18 @@ namespace QTIEditor
 
         private void ExportButton_Click(object sender, RoutedEventArgs e)
         {
-            var saveDialog = new Microsoft.Win32.SaveFileDialog
+            ExportQTI exportOptions = new(GetQuestions())
             {
-                DefaultExt = Constants.QTI_PACKAGE_FILE_EXT,
-                Title = "Export" + Constants.QTI_PACKAGE_FRIENDLY_NAME,
-                Filter = $"{Constants.QTI_PACKAGE_FRIENDLY_NAME}|*{Constants.QTI_PACKAGE_FILE_EXT}|All Files|*.*"
+                WindowStartupLocation = WindowStartupLocation.CenterScreen,
+                Width = 600,
+                Height = 400
+
             };
-
-            var res = saveDialog.ShowDialog(this);
-
-            if (res == true)
-            {
-                try
-                {
-                    ExportXml(saveDialog.FileName);
-                }
-                catch (Exception exportException)
-                {
-                    MessageBox.Show($"An issue occurred during export. Error: \n {exportException}","Export Failed!", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-                
-            }
+            exportOptions.ShowDialog();
 
         }
 
-        public void ExportXml(string path)
-        {
-
-            List<IManifestLinkable> questions = [];
-
-            foreach (UIElement interaction in InteractionStack.Children)
-            {
-                if (interaction is IInteractionControl associateInteraction)
-                {
-                    questions.Add(associateInteraction.ToQTIAssessmentItem());
-                }
-            }
-
-            Manifest manifest = new()
-            {
-                metadata = new()
-                {
-                    title = "Export",
-                    description = "",
-                    copyright = ""
-                },
-                resources = questions,
-
-            };
-
-            var tempDir = Directory.CreateTempSubdirectory();
-
-            Directory.SetCurrentDirectory(tempDir.FullName);
-
-            manifest.WriteToFile();
-
-            if (File.Exists(path))
-            {
-                File.Delete(path);
-            }
-
-            ZipFile.CreateFromDirectory(tempDir.FullName, path);
-
-        }
+        
 
         private void ContextMenuItemAddItem_Click(object sender, RoutedEventArgs e)
         {
@@ -273,19 +222,23 @@ namespace QTIEditor
 
         }
 
-        private void ExportPdfButton_Click(object sender, RoutedEventArgs e)
+        private List<IManifestLinkable> GetQuestions()
         {
-
             List<IManifestLinkable> questions = [];
 
             foreach (UIElement interaction in InteractionStack.Children)
             {
-                if (interaction is IInteractionControl associateInteraction)
+                if (interaction is IInteractionControl interactionControl)
                 {
-                    questions.Add(associateInteraction.ToQTIAssessmentItem());
+                    questions.Add(interactionControl.ToQTIAssessmentItem());
                 }
             }
-            ExportPDF exportOptions = new(questions)
+            return questions;
+        }
+
+        private void ExportPdfButton_Click(object sender, RoutedEventArgs e)
+        {
+            ExportPDF exportOptions = new(GetQuestions())
             {
                 WindowStartupLocation = WindowStartupLocation.CenterScreen
             };

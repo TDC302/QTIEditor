@@ -22,7 +22,7 @@
                 
             </CheckBox>
             <Label Content="Description: " DockPanel.Dock="Top" Margin="5,0"/>
-            <TextBox x:Name="TextBoxAssessmentDescription" DockPanel.Dock="Top" Padding="0,5" Margin="5,0" MinLines="4" AcceptsTab="True" AcceptsReturn="True" TextWrapping="WrapWithOverflow"/>
+            <TextBox x:Name="TextBoxAssessmentDescription" DockPanel.Dock="Top" Padding="0,5" Margin="5,0" MinLines="4" AcceptsTab="True" AcceptsReturn="True" TextWrapping="Wrap"/>
             
 
 

@@ -1,13 +1,6 @@
 ﻿using QTIEditor.QTI.Interfaces;
 using QTIEditor.QTI.SimpleTypes;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Security;
-using System.Security.AccessControl;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;

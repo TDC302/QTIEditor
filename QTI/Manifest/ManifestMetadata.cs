@@ -73,8 +73,6 @@ namespace QTIEditor.QTI.Manifest
 			</imsmd:metaMetadata>
 			<imsmd:technical>
 				<imsmd:format>text/x-imsqti-item-xml</imsmd:format>
-				<!--<imsmd:format>text/x-imsqti-test-xml/imsmd:format>
-				<imsmd:format>image/png</imsmd:format>-->
 			</imsmd:technical>
 			<imsmd:rights>
 				<imsmd:description>

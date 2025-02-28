@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:QTIEditor"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="600" BorderBrush="Gray">
+             d:DesignHeight="300" d:DesignWidth="600" >
     
     <UserControl.Resources>
         
@@ -19,23 +19,23 @@
             </Style.Triggers>
         </Style>
     </UserControl.Resources>
-    <Grid Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
+    <Grid Background="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}">
         <Grid.RowDefinitions>
             <RowDefinition Height="43"/>
             <RowDefinition/>
-            <RowDefinition Height="30"/>
+            <RowDefinition Height="40"/>
         </Grid.RowDefinitions>
         <Label Content="Points:" Margin="0,0,65,0" VerticalAlignment="Center" Height="26" HorizontalAlignment="Right" Width="49"/>
         <TextBox Margin="60,0,120,0" TextWrapping="NoWrap" Text="{Binding Prompt, RelativeSource={RelativeSource AncestorType=local:ChoiceInteractionControl}}" VerticalAlignment="Center" Background="White" Height="20"/>
         <TextBox Style="{StaticResource ValidationErrorTextBox}" Margin="0,0,44,0" TextWrapping="NoWrap" Text="{Binding Points, ValidatesOnExceptions=True, RelativeSource={RelativeSource AncestorType=local:ChoiceInteractionControl}}" VerticalAlignment="Center" Background="White" Height="20" HorizontalAlignment="Right" Width="25"/>
         <Label Content="Prompt:" HorizontalAlignment="Left" Margin="7,0,0,0" VerticalAlignment="Center" Width="54" Height="26"/>
-        <StackPanel Grid.Row="1" >
+        <StackPanel Grid.Row="1" Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" >
             <ItemsControl ItemsSource="{Binding ChoiceControlList, RelativeSource={RelativeSource AncestorType=local:ChoiceInteractionControl}}" Padding="5,0,0,15"/>
         </StackPanel>
         <Button x:Name="DeleteButton" Margin="0,0,5,0" VerticalAlignment="Center" Height="Auto" Width="Auto" HorizontalAlignment="Right" BorderBrush="{x:Null}" Background="{x:Null}" Click="DeleteButton_Click">
             <Image Source="Resources/Icons/icon_close.png" Width="25" Height="25" />
         </Button>
-        <Rectangle Margin="0,0,0,0" Grid.Row="2" Fill="White"/>
+        <Rectangle Margin="0,0,0,0" Grid.Row="2" Fill="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"/>
 
 
     </Grid>

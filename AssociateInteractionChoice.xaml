@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:QTIEditor"
              mc:Ignorable="d" 
-             d:DesignHeight="30" d:DesignWidth="500" BorderBrush="Black" Background="White">
+             d:DesignHeight="30" d:DesignWidth="500" Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>

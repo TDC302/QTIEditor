@@ -125,10 +125,10 @@ namespace QTIEditor
 
                 if (trueFalse && line[4] == "0")
                 {
-                    line[4] = "1";
+                    line[4] = "2";
                 } else if (trueFalse)
                 {
-                    line[4] = "2";
+                    line[4] = "1";
                 }
                 List<string> choices;
 

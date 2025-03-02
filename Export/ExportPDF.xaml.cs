@@ -1,5 +1,7 @@
 ﻿using PdfSharp.Drawing;
+using PdfSharp.Drawing.Layout;
 using PdfSharp.Pdf;
+using QTIEditor.Export.PDF;
 using QTIEditor.QTI.Interfaces;
 using System.IO;
 using System.Runtime.InteropServices.Swift;
@@ -71,10 +73,10 @@ namespace QTIEditor.Export
                         new XRect(0, 0, titlePage.Width.Point, titlePage.Height.Point/2),
                         XStringFormats.Center);
 
-            gfx.DrawString(TextBoxAssessmentDescription.Text, new("Verdana", 10), XBrushes.Black,
-                        new XRect(0, 0, titlePage.Width.Point, titlePage.Height.Point),
-                        XStringFormats.Center);
 
+            XTextBlock block = new(TextBoxAssessmentDescription.Text, XBrushes.Black, new("Verdana", 10), titlePage.Width.Point / 3, titlePage.Height.Point / 3, titlePage.Width.Point / 3);
+
+            block.Draw(gfx);            
             
         }
 

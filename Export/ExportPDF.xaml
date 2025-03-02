@@ -12,10 +12,28 @@
             <ColumnDefinition/>
 
         </Grid.ColumnDefinitions>
+
+        
         <ScrollViewer Background="DarkGray" Grid.Column="1">
-            <ItemsControl x:Name="PdfPreview"/>
+            <ItemsControl x:Name="PdfPreview">
+                
+            </ItemsControl>
         </ScrollViewer>
+        <Label x:Name="LabelPreviewReload" Content="Refreshing Preview..." Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="30"/>
         <DockPanel LastChildFill="False" Margin="5">
+
+            <Label Content="Export Options:" DockPanel.Dock="Top" FontSize="20" FontWeight="Bold"/>
+            <DockPanel DockPanel.Dock="Top" Margin="5">
+                <Label Content="Assessment Title: "/>
+                <TextBox x:Name="TextBoxAssessmentTitle" TextChanged="ChangesMade"/>
+            </DockPanel>
+
+            <Label Content="Description: " DockPanel.Dock="Top" Margin="5,0"/>
+            <TextBox x:Name="TextBoxAssessmentDescription" DockPanel.Dock="Top" Padding="0,5" Margin="5,0" MinLines="4" AcceptsTab="True" AcceptsReturn="True" TextWrapping="Wrap" TextChanged="ChangesMade"/>
+
+
+
+
             <DockPanel DockPanel.Dock="Bottom">
                 <Button x:Name="CancelButton" Content="Cancel" Padding="2" Margin="5"  FontSize="15" Click="CancelButton_Click"  />
                 <Button x:Name="ExportButton" Content="Export" Padding="2"  FontWeight="Bold" FontSize="20" Click="ExportButton_Click" />

@@ -36,14 +36,18 @@ namespace QTIEditor.Export
         {
             documentPreview = new();
 
-            PdfPage page = documentPreview.AddPage();
-            XGraphics gfx = XGraphics.FromPdfPage(page);
+            PdfPage titlePage = documentPreview.AddPage();
+
+            XGraphics gfx = XGraphics.FromPdfPage(titlePage);
 
             XFont font = new("Verdana", 20);
 
+            gfx.DrawString(TextBoxAssessmentTitle.Text, font, XBrushes.Black,
+                        new XRect(0, 0, titlePage.Width.Point, titlePage.Height.Point/2),
+                        XStringFormats.Center);
 
-            gfx.DrawString("Hello, World!", font, XBrushes.Black,
-                        new XRect(0, 0, page.Width.Point, page.Height.Point),
+            gfx.DrawString(TextBoxAssessmentDescription.Text, new("Verdana", 10), XBrushes.Black,
+                        new XRect(0, 0, titlePage.Width.Point, titlePage.Height.Point),
                         XStringFormats.Center);
 
             RenderPdfPreview();

@@ -2,13 +2,17 @@
 using PdfSharp.Pdf;
 using QTIEditor.QTI.Interfaces;
 using System.IO;
+using System.Runtime.InteropServices.Swift;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+using Windows.ApplicationModel.Appointments;
 using Windows.Storage.Streams;
 
 namespace QTIEditor.Export
 {
+    
+
     /// <summary>
     /// Interaction logic for ExportPDF.xaml
     /// </summary>
@@ -18,19 +22,40 @@ namespace QTIEditor.Export
         readonly List<IManifestLinkable> questions;
 
         PdfDocument documentPreview = new();
+        private readonly InMemoryRandomAccessStream stream = new();
 
-        IRandomAccessStream stream = new InMemoryRandomAccessStream();
+
+
+        DateTime lastChange = DateTime.MinValue;
 
         public ExportPDF(List<IManifestLinkable> questions)
         {
             this.questions = questions;
+            ReloadFinished += ExportPDF_ReloadFinished;
             InitializeComponent();
-            DrawQuestionsToPdf();
-
 
         }
 
+        private void ExportPDF_ReloadFinished(object? sender, EventArgs e)
+        {
+            awaitingReload = false;
+        }
 
+        private bool _isInReload = false;
+        private bool awaitingReload
+        {
+            get
+            {
+                return _isInReload;
+            }
+            set
+            {
+                _isInReload = value;
+                LabelPreviewReload.Visibility = awaitingReload ? Visibility.Visible : Visibility.Collapsed;
+            }
+        }
+
+        private event EventHandler? ReloadFinished;
 
         public void DrawQuestionsToPdf()
         {
@@ -39,7 +64,7 @@ namespace QTIEditor.Export
             PdfPage titlePage = documentPreview.AddPage();
 
             XGraphics gfx = XGraphics.FromPdfPage(titlePage);
-
+            
             XFont font = new("Verdana", 20);
 
             gfx.DrawString(TextBoxAssessmentTitle.Text, font, XBrushes.Black,
@@ -50,60 +75,9 @@ namespace QTIEditor.Export
                         new XRect(0, 0, titlePage.Width.Point, titlePage.Height.Point),
                         XStringFormats.Center);
 
-            RenderPdfPreview();
-
+            
         }
 
-        public void RenderPdfPreview()
-        {
-            documentPreview.Save(stream.AsStream());
-
-            Windows.Data.Pdf.PdfDocument.LoadFromStreamAsync(stream).AsTask()
-                .ContinueWith(t2 => PdfToImages(t2.Result), TaskScheduler.FromCurrentSynchronizationContext());
-
-        }
-
-
-
-
-        private async Task PdfToImages(Windows.Data.Pdf.PdfDocument pdfDoc)
-        {
-            var items = PdfPreview.Items;
-            items.Clear();
-
-            if (pdfDoc == null) return;
-
-            for (uint i = 0; i < pdfDoc.PageCount; i++)
-            {
-                using var page = pdfDoc.GetPage(i);
-                var bitmap = await PageToBitmapAsync(page);
-                var image = new Image
-                {
-                    Source = bitmap,
-                    HorizontalAlignment = HorizontalAlignment.Center,
-                    Margin = new Thickness(0, 4, 0, 4),
-                    MaxWidth = 800
-                };
-                items.Add(image);
-            }
-        }
-
-        private static async Task<BitmapImage> PageToBitmapAsync(Windows.Data.Pdf.PdfPage page)
-        {
-            BitmapImage image = new();
-
-            using (var stream = new InMemoryRandomAccessStream())
-            {
-                await page.RenderToStreamAsync(stream);
-
-                image.BeginInit();
-                image.CacheOption = BitmapCacheOption.OnLoad;
-                image.StreamSource = stream.AsStream();
-                image.EndInit();
-            }
-
-            return image;
-        }
 
         private void ExportButton_Click(object sender, RoutedEventArgs e)
         {
@@ -131,6 +105,77 @@ namespace QTIEditor.Export
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
             Close();
+        }
+
+
+
+        private void ChangesMade(object sender, TextChangedEventArgs e)
+        {
+            lastChange = DateTime.Now;
+            if (awaitingReload)
+                return;
+
+            awaitingReload = true;
+
+            UpdatePreview().ContinueWith(_ => ReloadFinished?.Invoke(this, EventArgs.Empty), TaskScheduler.FromCurrentSynchronizationContext());
+
+        }
+
+
+        private async Task UpdatePreview()
+        {
+            // wait for the user to stop making changes before rendering
+            while (DateTime.Now - lastChange < TimeSpan.FromMilliseconds(500))
+            {
+                await Task.Delay(DateTime.Now - lastChange);
+            }
+            DrawQuestionsToPdf();
+            documentPreview.Save(stream.AsStream());
+            await Windows.Data.Pdf.PdfDocument.LoadFromStreamAsync(stream).AsTask()
+                    .ContinueWith(t2 => PdfToImages(t2.Result), TaskScheduler.FromCurrentSynchronizationContext());
+
+        }
+
+        private async Task PdfToImages(Windows.Data.Pdf.PdfDocument pdfDoc)
+        {
+            var items = PdfPreview.Items;
+            items.Clear();
+
+            if (pdfDoc == null) return;
+
+            for (uint i = 0; i < pdfDoc.PageCount; i++)
+            {
+                using var page = pdfDoc.GetPage(i);
+                var bitmap = await PageToBitmapAsync(page);
+                var image = new Image
+                {
+                    Source = bitmap,
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    Margin = new Thickness(0, 4, 0, 4),
+                    MaxWidth = 800
+                };
+                items.Add(image);
+            }
+
+        }
+
+        private static async Task<BitmapImage> PageToBitmapAsync(Windows.Data.Pdf.PdfPage page)
+        {
+            BitmapImage image = new();
+
+            using (var stream = new InMemoryRandomAccessStream())
+            {
+                await page.RenderToStreamAsync(stream);
+
+                image.BeginInit();
+                image.CacheOption = BitmapCacheOption.OnLoad;
+                image.StreamSource = stream.AsStream();
+                image.EndInit();
+            }
+
+            return image;
+
+
         }
     }
 }

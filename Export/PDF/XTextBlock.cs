@@ -2,7 +2,7 @@
 
 namespace QTIEditor.Export.PDF
 {
-    class XTextBlock
+    class XTextBlock : IDrawableBlock
     {
 
         public XBrush brush;
@@ -11,18 +11,22 @@ namespace QTIEditor.Export.PDF
 
         public XFont font;
 
-        public XPoint pos;
+        public XPoint Position { get; set; }
 
-        public double width;
+        public double Width { get; set; }
 
+        public double Height
+        {
+            get => SimulateDraw();
+        }
 
         public XTextBlock(string text, XBrush brush, XFont font, XPoint pos, double width)
         {
             this.brush = brush;
             this.text = text;
             this.font = font;
-            this.pos = pos;
-            this.width = width;
+            Position = pos;
+            Width = width;
         }
 
         public XTextBlock(string text, XBrush brush, XFont font, double xPos, double yPos, double width)
@@ -30,8 +34,8 @@ namespace QTIEditor.Export.PDF
             this.brush = brush;
             this.text = text;
             this.font = font;
-            pos = new(xPos, yPos);
-            this.width = width;
+            Position = new(xPos, yPos);
+            Width = width;
         }
 
 
@@ -42,27 +46,41 @@ namespace QTIEditor.Export.PDF
             double heightOffset = 0d;
             foreach (var line in lines)
             {
-                WriteLineWrap(line, gfx, ref heightOffset);
+                DrawLineWrap(line, gfx, ref heightOffset);
 
-                heightOffset += font.GetHeight();
             }
         }
 
-        void WriteLineWrap(string line, XGraphics gfx, ref double heightOffset)
+        double SimulateDraw()
+        {
+            var lines = text.Split('\n');
+
+            double heightOffset = 0d;
+            XGraphics virtualGfx = XGraphics.CreateMeasureContext(XSize.Empty, XGraphicsUnit.Point, XPageDirection.Downwards);
+            foreach (var line in lines)
+            {
+                DrawLineWrap(line, virtualGfx, ref heightOffset, true);
+            }
+
+            return heightOffset;
+        }
+
+     
+        void DrawLineWrap(string line, XGraphics gfx, ref double heightOffset, bool simulate = false)
         {
             var expectedSize = gfx.MeasureString(line, font);
-            if (expectedSize.Width <= width)
+            if (expectedSize.Width <= Width)
             {
-                gfx.DrawString(line, font, brush, pos + new XVector(0, heightOffset));
+                if (!simulate) gfx.DrawString(line, font, brush, Position + new XVector(0, heightOffset));
                 heightOffset += font.GetHeight();
                 return;
             }
 
             double approxCharWidth = expectedSize.Width / line.Length;
-            int splitIndex = (int)(width / approxCharWidth);
+            int splitIndex = (int)(Width / approxCharWidth);
 
             // make the string smaller until we're under our limit
-            while (gfx.MeasureString(line[..splitIndex], font).Width > width)
+            while (gfx.MeasureString(line[..splitIndex], font).Width > Width)
             {
                 splitIndex--;
             }
@@ -72,16 +90,18 @@ namespace QTIEditor.Export.PDF
             {
                 if (char.IsWhiteSpace(line[i]))
                 {
-                    gfx.DrawString(line[0..i], font, brush, pos + new XVector(0, heightOffset));
+                    if (!simulate) gfx.DrawString(line[0..i], font, brush, Position + new XVector(0, heightOffset));
                     heightOffset += font.GetHeight();
-                    WriteLineWrap(line[(i+1)..], gfx, ref heightOffset);
+                    DrawLineWrap(line[(i+1)..], gfx, ref heightOffset);
                     return;
                 }
             }
 
+            // if no char break is found just split the line at the index
+            if (!simulate) gfx.DrawString(line[0..splitIndex], font, brush, Position + new XVector(0, heightOffset));
+            heightOffset += font.GetHeight();
+            DrawLineWrap(line[(splitIndex + 1)..], gfx, ref heightOffset);
 
-            
-            
         }
 
     }

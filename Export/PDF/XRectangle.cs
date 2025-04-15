@@ -19,14 +19,14 @@ namespace QTIEditor.Export.PDF
         public XPoint Position
         {
             get => underlyingRect.TopLeft;
-            set => underlyingRect.Offset(value - underlyingRect.TopLeft);
+            set => underlyingRect.Location = value;
             
         }
         
         public XPen? Stroke { get; set; } = null;
         public XBrush? Fill { get; set; } = null;
 
-        public readonly XRect underlyingRect;
+        public XRect underlyingRect;
 
 
         public XRectangle(double width, double height, XPoint position, XPen? stroke = null, XBrush? fill = null)

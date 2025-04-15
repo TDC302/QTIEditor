@@ -45,9 +45,9 @@ namespace QTIEditor.Export.PDF
         {
             foreach (IDrawableBlock item in this)
             {
-                item.Position.Offset(Position.X, Position.Y);
+                item.Position = new(Position.X + item.Position.X, Position.Y + item.Position.Y);
                 item.Draw(graphics);
-                item.Position.Offset(-Position.X, -Position.Y);
+                item.Position = new(Position.X - item.Position.X, Position.Y - item.Position.Y);
             }
         }
     }
